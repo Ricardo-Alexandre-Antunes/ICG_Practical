@@ -42,3 +42,19 @@ Torus with shininess = 0
 ![alt text](image-3.png)
 
 Torus with shininess = 100
+
+1.4
+
+![perspective](ezgif-39ef276bc8629b.gif)
+
+Orthographic Camera
+
+![orthographic](ezgif-3051c90262004a.gif)
+
+
+It looks more realistic with the first example, as it says in the documentation the orthographic camera is more useful for 2D (2.5D) graphics while the perspective camera matches more closely the human eye.
+
+TO setup the Orthographic Camera you use a constructor similar to the perspective camera. But the "borders" of the camera are defined in this constructor (top bottom left right) - it's still looking at the center of the scene (0, 0, 0)
+
+The size of models is also different, while in orthographic camera the sizes are the same, in the perspective camera the sizes appear different according to the distance to the camera
+

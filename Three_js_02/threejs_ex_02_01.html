@@ -59,13 +59,26 @@
 
 		import * as THREE from 'three';
 
+		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+		const scene = new THREE.Scene();
+		const renderer = new THREE.WebGLRenderer({ antialias: true });
+		
+
+		function onResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+
 		// Once everything is loaded, run this function
 
 		function init() {
 
+			window.addEventListener('resize', onResize, false);
+
 			// The SCENE
 
-			const scene = new THREE.Scene();
+			
 
 			// The GROUND plane
 
@@ -141,6 +154,9 @@
 			cylinder.position.y = 2.5;
 			cylinder.position.z = -2.5;
 
+			cylinder.rotation.x = Math.PI / 2;
+			cylinder.rotation.z = Math.PI / 2;
+
 			cylinder.receiveShadow = true;
 			cylinder.castShadow = true;
 
@@ -196,7 +212,7 @@
 			scene.add(cylinder2);
 
 			const pointLight = new THREE.PointLight(0xffffff); // Intensity 2, Range 100
-			pointLight.position.set(-40, 60, -10);
+			pointLight.position.set(-10, 30, -5);
 			pointLight.intensity = 5;
 			pointLight.decay = 0;
 			pointLight.castShadow = true;
@@ -211,7 +227,9 @@
 
 			// --- Where the viewer is and how he is looking at the scene
 
-			const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+			
+
+			//const camera = new THREE.OrthographicCamera( window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, 1, 1000 );
 
 			// Position the camera
 
@@ -231,7 +249,7 @@
 
 			// The RENDERER --- To display the scene on the Web page
 
-			const renderer = new THREE.WebGLRenderer({ antialias: true });
+			
 
 			renderer.setClearColor(new THREE.Color(0xffffff));
 
@@ -253,18 +271,19 @@
 			// Update model features and render the scene 
 			renderScene() 
 			
-			function renderScene() { 
+			function renderScene() {
+				 
 				// Rotate the cube around its axes 
 				cube.rotation.x += 0.02; 
 				cube.rotation.y += 0.02; 
 				cube.rotation.z += 0.02; 
 
 				// Rotate the torus around its axes
-				torus.rotation.x += 0.03;
+				torus.rotation.x += 0.01;
 			
 
 
-				step += 0.06; 
+				step += 0.02; 
 				// Bounce the sphere up and down 
 				sphere.position.x = 20 + (10 * Math.cos(step)); 
 				sphere.position.y = 3 + (10 * Math.abs(Math.sin(step))); 
