@@ -53,6 +53,8 @@
 
 		import * as THREE from 'three';
 
+		const scene = new THREE.Scene();
+
 		function createTree() {
 
 			// Creating a model by grouping basic geometries
@@ -68,6 +70,9 @@
 			const redMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
 
 			const cylinder = new THREE.Mesh(cylinderGeometry, redMaterial);
+
+			cylinder.receiveShadow = true;
+			cylinder.castShadow = true;
 
 			// Move base of the cylinder to y = 0
 
@@ -85,6 +90,9 @@
 
 			const cone = new THREE.Mesh(coneGeometry, greenMaterial);
 
+			cone.receiveShadow = true;
+			cone.castShadow = true;
+
 			// Move base of the cone to the top of the cylinder
 
 			cone.position.y = cylinderHeight + coneHeight / 2.0;
@@ -97,29 +105,146 @@
 
 			tree.add(cone);
 
-			tree.receiveShadow = true;
-			tree.castShadow = true;
-
 			return tree;
+		}
+
+		function createForrest(center_x=0, center_z=0, speed_1=0.01, speed_2=0.01, speed_3=0.01, speed_4=0.01) {
+			
+			const forrest = new THREE.Group();
+
+			const center_array = [];
+
+			const tree_1 = createTree();
+
+			const forrest_center_1 = new THREE.Object3D();
+
+			center_array.push(forrest_center_1);
+
+			forrest_center_1.add(tree_1);
+
+			tree_1.position.x = -10;
+
+			tree_1.position.z = -10;
+
+
+
+			const tree_2 = createTree();
+
+			const forrest_center_2 = new THREE.Object3D();
+
+			center_array.push(forrest_center_2);
+
+			forrest_center_2.add(tree_2);
+
+			tree_2.position.x = 25;
+
+			tree_2.position.z = -25;
+
+			tree_2.scale.set(0.7, 2, 1);
+
+
+
+			const tree_3 = createTree();
+
+			const forrest_center_3 = new THREE.Object3D();
+
+			center_array.push(forrest_center_3);
+
+			forrest_center_3.add(tree_3);
+
+			tree_3.position.x = 40;
+
+			tree_3.position.z = 40;
+
+			tree_3.scale.set(1, 0.8, 1);
+
+
+
+			const tree_4 = createTree();
+
+			const forrest_center_4 = new THREE.Object3D();
+
+			center_array.push(forrest_center_4);
+
+			forrest_center_4.add(tree_4);
+
+			tree_4.position.x = -50;
+
+			tree_4.position.z = 50;
+
+			tree_4.scale.set(1.5, 1.15, 1);
+
+
+
+			for (let i = 0; i < center_array.length; i++) {
+				center_array[i].position.x = center_x;
+				center_array[i].position.z = center_z;
+				forrest.add(center_array[i]);
+			}
+
+
+			function render_forest(step) {
+				
+				forrest_center_1.rotation.y = step * speed_1;
+
+				forrest_center_2.rotation.y = step * speed_2;
+
+				forrest_center_3.rotation.y = step * speed_3;
+
+				forrest_center_4.rotation.y = step * speed_4;
+
+			}
+
+
+			return [forrest, render_forest];
+		}
+
+		function add_pointLight(x, y, z, intensity, decay) {
+			const pointLight = new THREE.PointLight(0xffffff); 
+			pointLight.position.set(x, y, z);
+			pointLight.intensity = intensity;
+			pointLight.decay = decay;
+			pointLight.castShadow = true;
+			scene.add( pointLight );
 		}
 
 		// Once everything is loaded, run this function
 
+		function onResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+
+		const renderer = new THREE.WebGLRenderer({ antialias: true });
+		const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1400);
+		
+
 		function init() {
 
-			// The SCENE
-
-			const scene = new THREE.Scene();
-
+			
+			window.addEventListener('resize', onResize, false);
 			// Plane Helper to represent the ZOX plane
 
 			const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0));
 
-			const planeHelper = new THREE.PlaneHelper(plane, 500, 0xaaaaaa);
+			const plane_material = new THREE.MeshLambertMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+
+			const plane_geometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+
+			const plane_mesh = new THREE.Mesh(plane_geometry, plane_material);
+			plane_mesh.receiveShadow = true;
+
+			plane_mesh.rotation.x = Math.PI / 2;
+
+			const planeHelper = new THREE.PlaneHelper(plane, 1000, 0xaaaaaa);
 
 			planeHelper.receiveShadow = true;
 
 			scene.add(planeHelper);
+			scene.add(plane_mesh);
+
+
 
 			// The coordinate axes
 
@@ -127,59 +252,35 @@
 
 			scene.add(axes);
 
-			const point = new THREE.Object3D();
 
 			// Adding models to the scene
 
-			const tree_1 = createTree();
+			const forrest_pack_1 = createForrest(0, 0, -5, -0.5, 1, 2);
+			const forrest_pack_2 = createForrest(100, 100, -4, 3, -1, 1);
+			const forrest_pack_3 = createForrest(-150, -150, 1, -2, 10, 0.5);
+			const forrest_pack_4 = createForrest(150, -150, -3, -3, 3, 3);
+			const forrest_pack_5 = createForrest(-150, 150, 1, 2, 3, 4);
 
-			tree_1.position.x = -50;
+			scene.add(forrest_pack_1[0]);
+			scene.add(forrest_pack_2[0]);
+			scene.add(forrest_pack_3[0]);
+			scene.add(forrest_pack_4[0]);
+			scene.add(forrest_pack_5[0]);
 
-			tree_1.position.z = -25;
 
-			point.add(tree_1);
 
-			const tree_2 = createTree();
-
-			tree_2.position.x = 50;
-
-			tree_2.position.z = -25;
-
-			tree_2.scale.set(0.7, 2, 1);
-
-			point.add(tree_2);
-
-			const tree_3 = createTree();
-
-			tree_3.position.x = 50;
-
-			tree_3.position.z = 25;
-
-			tree_3.scale.set(1, 0.8, 1);
-
-			point.add(tree_3);
-
-			const tree_4 = createTree();
-
-			tree_4.position.x = 20;
-
-			tree_4.position.z = 25;
-
-			tree_4.scale.set(1.5, 1.15, 1);
-
-			point.add(tree_4);
-
-			scene.add(point);
 
 			// The CAMERA --- A camera is added to the scene
 
 			// --- Where the viewer is and how he is looking at the scene
 
-			const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 400);
+			
 
-			camera.position.y = 50;
+			camera.position.y = 150;
 
-			camera.position.z = 150;
+			camera.position.z = 450;
+
+
 
 			// Point the camera to the center of the scene
 
@@ -189,18 +290,18 @@
 
 
 			// Light
+			add_pointLight(0, 25, 0, 50, 1);
+			add_pointLight(100, 50, 100, 50, 1.5);
+			add_pointLight(-100, 50, 100, 50, 1.5);
+			add_pointLight(100, 50, -100, 50, 1.5);
+			add_pointLight(-100, 50, -100, 50, 1.5);
 
-			const pointLight = new THREE.PointLight(0xffffff); 
-			pointLight.position.set(-10, 0, -5);
-			pointLight.intensity = 5;
-			pointLight.decay = 0;
-			pointLight.castShadow = true;
-			scene.add( pointLight );
+
 
 
 			// The RENDERER --- To display the scene on the Web page
 
-			const renderer = new THREE.WebGLRenderer({ antialias: true });
+			
 
 			renderer.shadowMap.enabled = true;
 
@@ -224,17 +325,20 @@
 			
 			function renderScene() {
 				
-				step += 0.01;
+				step += 0.005;
 
-				point.rotation.y = step;
+				forrest_pack_1[0].rotation.y = step;
+				forrest_pack_2[0].rotation.y = step;
+				forrest_pack_3[0].rotation.y = step;
+				forrest_pack_4[0].rotation.y = step;
+				forrest_pack_5[0].rotation.y = step;
 
-				tree_1.position.z = -70 + 25 * Math.cos(step * 5.5);
-
-				tree_2.position.z = -60 + 10 * Math.sin(step * 2);
-
-				tree_3.rotation.y = step * 2;
-
-				tree_4.rotation.y = step * 3;
+				forrest_pack_1[1](step);
+				forrest_pack_2[1](step);
+				forrest_pack_3[1](step);
+				forrest_pack_4[1](step);
+				forrest_pack_5[1](step);
+				
 
 				
 
