@@ -15,3 +15,5 @@ Scene with Perspective Camera
 Scene with Ortographic Camera
 
 ![alt text](image-1.png)
+
+You can tell that with the Perspective Camera, things that are farther away get smaller, opposed to the Orthographic Camera
